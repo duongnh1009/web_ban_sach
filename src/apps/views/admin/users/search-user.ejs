@@ -1,0 +1,163 @@
+<%- include("../layout/head", {title: "D - SHOP"})%>
+<%- include("../layout/header")%>
+<%- include("../layout/sidebar")%>
+
+<body>
+		
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#"><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
+				<li class="active">Tìm kiếm tài khoản</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="page-header">Kết quả tìm kiếm với tài khoản <span>" <%=keyword%> "</span></h3>
+			</div>
+		</div><!--/.row-->
+		<div id="toolbar" class="toolbar-item">
+            <a href="/admin/user/create" class="btn btn-success">
+                <i class="glyphicon glyphicon-plus"></i> Thêm tài khoản
+            </a>
+
+            <a style="margin-left: 10px;" href="/admin/user" class="btn btn-primary">
+                Quản lí tài khoản
+            </a>
+
+            <a style="margin: 0 10px;" href="/admin/user/trash" class="btn btn-danger">
+                <i class="glyphicon glyphicon-trash"></i> Thùng rác (<%=userRemove%>)
+            </a>
+
+            <div>
+                <form class="form-inline" action="/admin/search/user">
+                    <input style="border: 1px solid #000;" name="keyword" class="form-control mt-3" type="search" required placeholder="Tìm kiếm..." aria-label="Search">
+                    <button class="btn btn-danger mt-3" type="submit">Lọc</button>
+                </form>
+            </div>
+        </div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+                    <% if(success.length >= 1){ %>
+                        <div class="alert alert-success"><%= success%></div>
+                    <% } %>
+					<div class="panel-body">
+                        <table 
+                            data-toolbar="#toolbar"
+                            data-toggle="table">
+
+						    <thead>
+						    <tr>
+						        <th data-field="name"  data-sortable="true">Họ & Tên</th>
+                                <th data-field="price" data-sortable="true">Email</th>
+                                <th>Quyền</th>
+                                <th>Hành động</th>
+						    </tr>
+                            </thead>
+                            <tbody>
+                                <%for(user of searchUsers) {%>
+                                    <tr>
+                                        <td><%=user.fullName%></td>
+                                        <td><%=user.email%></td>
+                                        <td><span class="label label-<%=user.role==='Admin'?'success':'danger'%>"><%=user.role%></span></td>
+                                        <td class="form-group">
+											<%if(user.role === "Admin") {%>
+												<a href="/admin/user/edit/<%=user._id%>" class="btn btn-primary">Thay đổi</a>
+												<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
+											<%} else { %>
+												<%if(!user.isLocked) {%>
+													<div style="display: flex;">
+														<form style="margin-right: 5px;" action="/admin/user/lockAccount/<%= user._id%>" method="post">
+															<button class="btn btn-primary" type="submit">Khóa tài khoản</button>
+														</form>
+														<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
+													</div>
+												<%} else { %>
+													<div style="display: flex;">
+														<form style="margin-right: 5px;" action="/admin/user/unlockAccount/<%= user._id%>" method="post">
+															<button class="btn btn-success" type="submit">Mở tài khoản</button>
+														</form>
+														<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
+													</div>
+												<%}%>
+											<%}%>
+                                        </td>
+                                    </tr>
+                                <%}%>
+                            </tbody>
+						</table>
+                    </div>
+                    <div class="panel-footer">
+                        <nav aria-label="Page navigation example">
+							<ul class="pagination">
+                                <%if(hasPrev) {%>
+                                    <li class="page-item"><a class="page-link" href="/admin/search/user?keyword=<%= keyword%>&page=<%=prev%>">&laquo;</a></li>
+                                <%}%>
+                                
+                                <%for(i of pages) {%>
+                                    <%if(i === "...") {%>
+                                        <li class="page-item"><span class="page-link"><%=i%></span></li>
+                                    <%} else {%>
+                                        <li class="page-item <%= page===i?'active':''%>"><a class="page-link" href="/admin/search/user?keyword=<%= keyword%>&page=<%=i%>"><%=i%></a></li>
+                                    <%}%>
+                                <%}%>
+
+                                <%if(hasNext) {%>
+                                    <li class="page-item"><a class="page-link" href="/admin/search/user?keyword=<%= keyword%>&page=<%=next%>">&raquo;</a></li>
+                                <%}%>
+                            </ul>
+                        </nav>
+                    </div>
+				</div>
+			</div>
+		</div><!--/.row-->	
+	</div>	<!--/.main-->
+
+    <!--confirm delete-->
+	<div id="delete-item" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Xóa tài khoản ?</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+			  <p>Bạn có muốn xóa tài khoản này không ?</p>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary" data-dismiss="modal">Hủy</button>
+			  <button id="btn-delete" type="button" class="btn btn-danger">Xóa bỏ</button>
+			</div>
+		  </div>
+		</div>
+	</div>
+
+	<form id="delete-form" method="POST"></form>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var itemId;
+			var deleteForm = document.forms['delete-form'];
+			var btnDelete = document.getElementById("btn-delete");
+
+			$('#delete-item').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget); 
+				itemId = button.data('id');
+			});
+
+			btnDelete.onclick = function() {
+				deleteForm.action = '/admin/user/delete/' + itemId + '?_method=DELETE';
+				deleteForm.submit();
+			}
+		})
+	</script>
+	<script src="js/jquery-3.7.0.js"></script>
+	<script src="js/bootstrap.js"></script>
+    <script src="js/bootstrap-table.js"></script>	
+</body>
+
+</html>

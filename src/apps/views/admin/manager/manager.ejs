@@ -1,0 +1,179 @@
+<%- include("../layout/head", {title: "D - SHOP" })%>
+    <%- include("../layout/header")%>
+        <%- include("../layout/sidebar")%>
+
+            <body>
+                <div class="container-sm">
+                    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+                        <div class="row">
+                            <ol class="breadcrumb">
+                                <li><a href="#"><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
+                                <li class="active">Quản lí kho</li>
+                            </ol>
+                        </div><!--/.row-->
+                        
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h1 class="page-header">Quản lí kho</h1>
+                            </div>
+                        </div><!--/.row-->
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-lg-12">   
+                                        <h2 class="page-header">Thống kê số lượng bán hàng</h2>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-10" >
+                                        <div class="row">
+                                            <canvas id="pieChart" width="400" height="400"></canvas>
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                
+                                        <h2 class="page-header">Thống kê số lượng nhập hàng </h2>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-10">
+                                        <div class="row">
+                                            <canvas id="pieChartRestock" width="400" height="400"></canvas>
+                                        </div>
+                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                           <div class=" col-lg-10">
+                            <h2 class="page-header">Thống kê số lượng nhập hàng</h2>
+                                <table class="table">
+                                    <thead>
+                                       
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Tên sản phẩm</th>
+                                                <th scope="col">tổng số lượng nhập</th>
+                                                <th scope="col">Ngày</th>
+                                            </tr>
+                                    
+                                    </thead>
+                                    <tbody>
+                                        <% dataImportProductTable.forEach((row, index)=> { %>
+                                            <tr>
+                                                <td>
+                                                    <%= index + 1 %>
+                                                </td>
+                                                <td>
+                                                    <%= row.product %>
+                                                </td>
+                                                <td>
+                                                    <%= row.totalQuantity %>
+                                                </td>
+                                                <td>
+                                                    <%= row.day %>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                        
+                                    </tbody>
+                                </table>
+                           </div>
+    
+                        </div>
+                        <div class="row" style="margin-bottom: 50px;">
+                           <div class=" col-lg-10">
+                            <h2 class="page-header">Thống kê số lượng bán hàng</h2>
+                                <table class="table">
+                                    <thead>
+                                       
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Tên sản phẩm</th>
+                                                <th scope="col">tổng số lượng bán</th>
+                                                <th scope="col">Ngày</th>
+                                            </tr>
+                                    
+                                    </thead>
+                                    <tbody>
+                                        <% dataSoldProductTable.forEach((row, index)=> { %>
+                                            <tr>
+                                                <td>
+                                                    <%= index + 1 %>
+                                                </td>
+                                                <td>
+                                                    <%= row.productName %>
+                                                </td>
+                                                <td>
+                                                    <%= row.totalQuantity %>
+                                                </td>
+                                                <td>
+                                                    <%= row.date %>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                       
+                                    </tbody>
+                                </table>
+                           </div>
+    
+                        </div>
+                    </div>
+
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <!-- bar char -->
+                <!-- chart sales product -->
+                <script>
+                    var ctxPie = document.getElementById('pieChart').getContext('2d');
+                    let dataPie = '<%= PieChart.data.labels %>';
+                    let dataArrayPie = dataPie.split(",")
+                    var myChartPie = new Chart(ctxPie, {
+                        type: 'pie',
+                        data: {
+                            labels: dataArrayPie,
+                            datasets: [{
+                                label: 'Tổng số lượng đã bán',
+                                data: <%= JSON.stringify(PieChart.data.datasets[0].data) %>,
+                                backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(0,0,255)'],
+                                hoverOffset: 4
+                            }]
+                        }
+                    });
+                </script>
+               
+                <!-- chart import product -->
+                <script>
+                    var ctxPieRestock = document.getElementById('pieChartRestock').getContext('2d');
+                    let dataPieRestock = '<%= dataRestock.data.labels %>';
+                    let dataArrayPieRestock = dataPieRestock.split(",")
+                    var myChartPie = new Chart(ctxPieRestock, {
+                        type: 'pie',
+                        data: {
+                            labels: dataArrayPieRestock,
+                            datasets: [{
+                                label: 'Tổng số lượng đã nhập',
+                                data: <%= JSON.stringify(dataRestock.data.datasets[0].data) %>,
+                                backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(0,0,255)'],
+                                hoverOffset: 4
+                            }]
+                        }
+                    });
+                </script>
+            
+                <script src="js/jquery-3.7.0.js"></script>
+                <script src="js/bootstrap.js"></script>
+                <script src="js/bootstrap-table.js"></script>
+            </body>
+
+            </html>

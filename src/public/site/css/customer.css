@@ -1,0 +1,23 @@
+.container2 {
+    width: 600px;
+    margin: 20px auto;
+}
+
+.customer-name input {
+    margin: 15px 0px;
+    padding: 0px 0px 0px 20px;
+}
+
+.customer-buy {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.customer-back {
+    margin-left: 10px;
+}
+
+.customer-back a {
+    text-decoration: none;
+    color: white;
+}

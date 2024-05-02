@@ -1,0 +1,116 @@
+<%- include("../layout/head", {title:"Home"})%>
+<%- include("../layout/header")%>
+<%- include("../layout/menu")%>
+<%- include("../layout/slider")%>
+
+<body>
+        <div id="my-cart">
+            <h3>Chi tiết đơn hàng</h3>
+            <p style="margin-top: 20px;">
+                <b>Tên người nhận: </b><%=order.name%><br>
+                <b>Số điện thoại: </b><%=order.phone%><br>
+                <b>Địa chỉ nhận hàng: </b> <%=order.address%><br>
+                <b>email: </b> <%=order.mail%><br>
+            </p>
+            <table style="margin-top: 20px;" class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Thông tin sản phẩm</th>
+                        <th scope="col">Ảnh sản phẩm</th>
+                        <th scope="col">Giá sản phẩm</th>
+                        <th scope="col">Tổng tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%order.items.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <b>Tên sản phẩm: </b><%=item.name%><br>
+                                <b>Tác giả: </b><%=item.author%><br>
+                                <b>Thể loại: </b><%=item.cat_id%><br>
+                                <b>Số lượng: </b><%=item.qty%><br>
+                            </td>
+                            <td>
+                                <img width="150" height="150" src="../images/<%=item.img%>">
+                            </td>
+                            <%if(item.salePrice > 0) {%>
+                                <td>
+                                    <b style="color: red;"><%=parseInt(item.salePrice).toLocaleString('en-us')%> đ</b>
+                                </td>
+                            <%} else {%>
+                                <td>
+                                    <b style="color: red;"><%=parseInt(item.price).toLocaleString('en-us')%> đ</b>
+                                </td>
+                            <%}%>
+
+                            <%if(item.salePrice > 0) {%>
+                                <td>
+                                    <b style="color: red;"><%=parseInt(item.qty*item.salePrice).toLocaleString('en-us')%> đ</b>
+                                </td>
+                            <%} else {%>
+                                <td>
+                                    <b style="color: red;"><%=parseInt(item.qty*item.price).toLocaleString('en-us')%> đ</b>
+                                </td>
+                            <%}%>
+                        </tr>
+                    <%})%>	
+                </tbody>
+            </table>
+
+            <div class="row" style="margin-top: 30px;">
+                <div class="col-lg-8"></div>
+                <div class="col-lg-2"><b style="color: red;">Tổng tiền: </b></div>
+                <div class="col-lg-2">
+                    <b style="color: red;"><%=parseInt(order.totalPrice).toLocaleString('en-us')%> đ</b>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <!--confirm delete-->
+	<div id="delete-item" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Xóa đơn hàng ?</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+			  <p>Bạn có muốn xóa đơn hàng này không ?</p>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary" data-dismiss="modal">Hủy</button>
+			  <button id="btn-delete" type="button" class="btn btn-danger">Xóa bỏ</button>
+			</div>
+		  </div>
+		</div>
+	</div>
+
+	<form id="delete-form" method="POST"></form>
+
+    <script>
+		document.addEventListener("DOMContentLoaded", function() {
+			var itemId;
+			var deleteForm = document.forms['delete-form'];
+			var btnDelete = document.getElementById("btn-delete");
+		
+			$('#delete-item').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget); 
+				itemId = button.data('id');
+			});
+
+			btnDelete.onclick = function() {
+				deleteForm.action = '/orderUser/remove/' + itemId + '?_method=DELETE';
+				deleteForm.submit();
+			}
+		}) 
+	</script>
+    
+    <%- include("../layout/footer")%>
+
+</body>
+</html>

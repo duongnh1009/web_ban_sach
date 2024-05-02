@@ -1,0 +1,110 @@
+<%- include("../layout/head", {title: "D - SHOP"})%>
+<%- include("../layout/header")%>
+<%- include("../layout/sidebar")%>
+
+<body>	
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">			
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#"><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
+				<li class="active">Tìm kiếm sản phẩm</li>
+			</ol>
+		</div><!--/.row-->
+		
+		<div class="row">
+			<div class="col-lg-12">
+				<h3 class="page-header">Kết quả tìm kiếm với sản phẩm <span>" <%=keyword%> "</span></h3>
+			</div>
+		</div><!--/.row-->
+		<div id="toolbar" class="toolbar-item">
+            <a href="/admin/product/create" class="btn btn-success">
+                <i class="glyphicon glyphicon-plus"></i> Thêm sản phẩm
+            </a>
+
+            <a style="margin: 0 10px;" href="/admin/product/trash" class="btn btn-danger">
+                <i class="glyphicon glyphicon-trash"></i> Thùng rác (<%=productRemove%>)
+            </a>
+
+            <div>
+                <form class="form-inline" action="/admin/search/product">
+                    <input style="border: 1px solid #000;" name="keyword" class="form-control mt-3" type="search" required placeholder="Tìm kiếm" aria-label="Search">
+                    <button class="btn btn-danger mt-3" type="submit">Lọc</button>
+                </form>
+            </div>
+        </div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-body">
+                        <table 
+                            data-toolbar="#toolbar"
+                            data-toggle="table">
+
+						    <thead>
+						    <tr>
+						        <th>Tên sản phẩm</th>
+                                <th>Giá</th>
+                                <th>Ảnh sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Trạng thái</th>
+                                <th>Danh mục</th>
+                                <th>Hành động</th>
+						    </tr>
+                            </thead>
+                            <tbody>
+                                <%for(product of products) {%>
+                                    <tr>
+                                        <td><%=product.name%></td>
+                                        <%if(product.salePrice > 0) {%>
+                                            <td><%=parseInt(product.salePrice).toLocaleString('en-us')%> đ</td>
+                                        <%} else { %>
+                                            <td><%=parseInt(product.price).toLocaleString('en-us')%> đ</td>
+                                        <%}%>
+                                        <td style="text-align: center"><img width="150" height="150" src="/static/images/<%=product.thumbnail%>" /></td>
+                                        <td ><span style="font-size: 13px;" class="label label-<%=product.quantity > 0 ?'success':'danger'%>"><%=product.quantity%></span></td>
+                                        <%if(product.quantity>0) {%>
+                                            <td><span class="label label-success">còn hàng</span></td>
+                                        <%} else { %>
+                                            <td><span class="label label-danger">hết hàng</span></td>
+                                        <%}%>
+                                        <td><%=product.cat_id.title%></td>
+                                        <td class="form-group">
+                                            <a href="/admin/product/edit/<%=product._id%>" class="btn btn-primary">Thay đổi</a>
+                                            <a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=product._id%>" data-target="#delete-item">Xóa</a>
+                                        </td>
+                                    </tr>
+                                <%}%>
+                            </tbody>
+						</table>
+                    </div>
+                    <div class="panel-footer">
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination">
+                                <%if(hasPrev) {%>
+                                    <li class="page-item"><a class="page-link" href="/admin/search/product?keyword=<%= keyword%>&page=<%=prev%>">&laquo;</a></li>
+                                <%}%>
+                                
+                                <%for(i of pages) {%>
+                                    <%if(i === "...") {%>
+                                        <li class="page-item"><span class="page-link"><%=i%></span></li>
+                                    <%} else {%>
+                                        <li class="page-item <%= page===i?'active':''%>"><a class="page-link" href="/admin/search/product?keyword=<%= keyword%>&page=<%=i%>"><%=i%></a></li>
+                                    <%}%>
+                                <%}%>
+
+                                <%if(hasNext) {%>
+                                    <li class="page-item"><a class="page-link" href="/admin/search/product?keyword=<%= keyword%>&page=<%=next%>">&raquo;</a></li>
+                                <%}%>
+                            </ul>
+                        </nav>
+                    </div>
+				</div>
+			</div>
+		</div><!--/.row-->	
+	</div>	<!--/.main-->
+
+	<script src="js/jquery-3.7.0.js"></script>
+	<script src="js/bootstrap.js"></script>
+    <script src="js/bootstrap-table.js"></script>	
+</body>
+</html>
