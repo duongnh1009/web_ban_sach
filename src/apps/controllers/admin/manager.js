@@ -1,6 +1,5 @@
 const orderModel = require("../../models/order");
 const productModel = require("../../models/product");
-const { format } = require("date-fns");
 
 // lấy dữ liệu nhập sản phẩm theo ngày và sản phẩm
 const getTotalPurchaseByDayAndProduct = async() => {
@@ -31,6 +30,9 @@ const getTotalPurchaseByDayAndProduct = async() => {
           product: "$_id.product",
           totalQuantity: 1,
         },
+      },
+      {
+        $sort: { date: -1 }, // Sắp xếp theo thời gian giảm dần
       },
     ]);
     return result;
@@ -89,6 +91,9 @@ const getSoldItemsByProductNameAndTime = async() => {
           },
           totalQuantity: 1,
         },
+      },
+      {
+        $sort: { date: -1 }, // Sắp xếp theo thời gian giảm dần
       },
     ]);
 
@@ -160,120 +165,49 @@ const getTotalPurchaseHistoryByProduct = async () => {
   }
 };
 
-// lấy theo doanh thu ngày ngày tuỳ chọn theo thời gian
-// const getRevenueByCustomDates = async (startDate, endDate) => {
-//   try {
-//     // Tạo mảng các ngày trong khoảng thời gian
-//     const datesInRange = [];
-//     const currentDate = new Date(startDate);
-//     while (currentDate <= endDate) {
-//       datesInRange.push(new Date(currentDate));
-//       currentDate.setDate(currentDate.getDate() + 1);
-//     }
-
-//     // Truy vấn doanh thu cho từng ngày trong khoảng thời gian
-//     const revenueOfCustomDates = await Promise.all(
-//       datesInRange.map(async (date) => {
-//         const startOfDate = new Date(
-//           date.getFullYear(),
-//           date.getMonth(),
-//           date.getDate(),
-//           0,
-//           0,
-//           0
-//         );
-//         const endOfDate = new Date(
-//           date.getFullYear(),
-//           date.getMonth(),
-//           date.getDate(),
-//           23,
-//           59,
-//           59
-//         );
-
-//         // Truy vấn doanh thu cho ngày hiện tại
-//         const revenueForDate = await orderModel.aggregate([
-//           {
-//             $match: {
-//               createdAt: {
-//                 $gte: startOfDate,
-//                 $lte: endOfDate,
-//               },
-//               status: "Đã giao",
-//             },
-//           },
-//           {
-//             $addFields: {
-//               validItems: {
-//                 $filter: {
-//                   input: "$items",
-//                   as: "item",
-//                   cond: { $ne: ["$$item", {}] },
-//                 },
-//               },
-//             },
-//           },
-//           {
-//             $unwind: "$validItems",
-//           },
-//           {
-//             $group: {
-//               _id: null,
-//               totalRevenue: {
-//                 $sum: { $multiply: ["$validItems.price", "$validItems.qty"] },
-//               },
-//             },
-//           },
-//           {
-//             $project: {
-//               _id: 0,
-//               totalRevenue: 1,
-//             },
-//           },
-//         ]);
-
-//         // Định dạng ngày
-//         const formattedDate = format(date, "dd/MM/yyyy");
-//         // Trả về kết quả doanh thu cho ngày hiện tại
-//         return {
-//           date: formattedDate,
-//           totalRevenue:
-//             revenueForDate.length > 0 ? revenueForDate[0].totalRevenue : 0,
-//         };
-//       })
-//     );
-
-//     return revenueOfCustomDates;
-//   } catch (error) {
-//     console.error("Lỗi khi tính toán doanh thu theo ngày tuỳ chọn:", error);
-//     throw error;
-//   }
-// };
-
-// xử lý thời gian
-// const handleTime = async (req, res) => {
-//   const { startDate, endDate } = req.body;
-//   const startTime = new Date(startDate);
-//   const endTime = new Date(endDate);
-//   const result = await getRevenueByCustomDates(startTime, endTime);
-//   const resulttotalRevenue = result.map((e) => e.totalRevenue);
-//   const resulttotalDate = result.map((e) => e.date);
-
-//   let dataDateChoose = {
-//     chartType: "bar",
-//     labels: resulttotalDate,
-//     datasetLabel: "Number of Votes",
-//     data: resulttotalRevenue,
-//     backgroundColor: "rgba(255, 99, 132, 0.2)",
-//     borderColor: "rgba(255, 99, 132, 1)",
-//   };
-//   // req.flash({dataDateChoose})
-//   res.json(dataDateChoose);
-// };
-
-const index = async (req, res) => {
+const importProduct = async (req, res) => {
   // Pie chart
   const generateColors = (numColors) => {
+    const colors = [];
+    for (let i = 0; i < numColors; i++) {
+      // Tạo màu ngẫu nhiên
+      const color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
+        Math.random() * 256
+      )}, ${Math.floor(Math.random() * 256)})`;
+      colors.push(color);
+    }
+    return colors;
+  };
+
+  // data pieChart import product
+  const dataImportProduct = await getTotalPurchaseHistoryByProduct();
+  const nameProductRestock = dataImportProduct.map((item) => item.name);
+  const quantityRestock = dataImportProduct.map((item) => item.totalQuantity);
+  const dataRestock = {
+    type: "pie",
+    data: {
+      labels: nameProductRestock,
+      datasets: [
+        {
+          label: "My First Dataset",
+          data: quantityRestock,
+          backgroundColor: generateColors(nameProductRestock.length),
+          hoverOffset: 4,
+        },
+      ],
+    },
+  };
+
+  const dataImportProductTable = await getTotalPurchaseByDayAndProduct();
+  res.render("admin/manager/import", {
+    dataImportProductTable,
+    dataRestock,
+  });
+};
+
+const soldOut = async(req, res) => {
+   // Pie chart
+   const generateColors = (numColors) => {
     const colors = [];
     for (let i = 0; i < numColors; i++) {
       // Tạo màu ngẫu nhiên
@@ -304,46 +238,14 @@ const index = async (req, res) => {
     },
   };
 
-  // data pieChart import product
-  const dataImportProduct = await getTotalPurchaseHistoryByProduct();
-  const nameProductRestock = dataImportProduct.map((item) => item.name);
-  const quantityRestock = dataImportProduct.map((item) => item.totalQuantity);
-  const dataRestock = {
-    type: "pie",
-    data: {
-      labels: nameProductRestock,
-      datasets: [
-        {
-          label: "My First Dataset",
-          data: quantityRestock,
-          backgroundColor: generateColors(nameProductRestock.length),
-          hoverOffset: 4,
-        },
-      ],
-    },
-  };
-
-  const dataImportProductTable = await getTotalPurchaseByDayAndProduct();
-  dataImportProductTable.sort((a, b) => {
-    // Sắp xếp theo ngày tăng dần
-    return new Date(a.day) - new Date(b.day);
-  });
-  
   const dataSoldProductTable = await getSoldItemsByProductNameAndTime();
-  dataSoldProductTable.sort((a, b) => {
-    // Sắp xếp theo ngày tăng dần
-    return new Date(a.date) - new Date(b.date);
-  });
-
-
-  res.render("admin/manager/manager", {
-    dataImportProductTable,
+  res.render("admin/manager/soldOut", {
     dataSoldProductTable,
-    PieChart,
-    dataRestock,
+    PieChart
   });
-};
+}
 
 module.exports = {
-  index,
+  importProduct,
+  soldOut
 };

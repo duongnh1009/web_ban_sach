@@ -89,6 +89,8 @@ const store = async (req, res) => {
   } = req.body;
   const { file } = req;
   let error = "";
+
+  //kiem tra xem san pham da ton tai chua
   const products = await productModel.findOne({
     slug: slug(name),
   });
@@ -113,7 +115,7 @@ const store = async (req, res) => {
     const thumbnail = "products/" + file.originalname;
     fs.renameSync(file.path, path.resolve("src/public/images", thumbnail));
     product["thumbnail"] = thumbnail;
-    new productModel(product).save();
+    await productModel.create(product)
     req.flash("success", "Thêm thành công !");
     res.redirect("/admin/product");
   }
@@ -144,6 +146,8 @@ const update = async (req, res) => {
   } = req.body;
   const { file } = req;
   let error = "";
+
+  //kiem tra xem san pham co cap nhat khong
   const products = await productModel.findOne({
     _id: req.params.id,
   });
@@ -163,6 +167,7 @@ const update = async (req, res) => {
   };
 
   if (product.name !== products.name) {
+    //kiem tra xem san pham da ton tai chua
     const isCheck = await productModel.findOne({
       slug: slug(name)
     });
@@ -177,7 +182,7 @@ const update = async (req, res) => {
     product["thumbnail"] = thumbnail;
   }
   product.salePrice = product.price - (product.sale * product.price) / 100;
-  await productModel.updateOne({ _id: id }, { $set: product });
+  await productModel.findByIdAndUpdate(id, product);
   req.flash("success", "Cập nhật thành công !");
   res.redirect("/admin/product");
 };

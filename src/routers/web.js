@@ -103,6 +103,7 @@ router.get("/admin/order-transport", authMiddleware.checkLogin, orderController.
 router.get("/admin/order-delivered", authMiddleware.checkLogin, orderController.delivered),
 router.get("/admin/order/detail/:id", authMiddleware.checkLogin, orderController.orderDetail),
 router.post("/admin/order/detail/:id", authMiddleware.checkLogin, orderController.update);
+router.get("/admin/order/detailTrash/:id", authMiddleware.checkLogin, orderController.orderDetailTrash),
 router.patch("/admin/order/restore/:id", authMiddleware.checkLogin, orderController.restore);
 router.delete("/admin/order/delete/:id", authMiddleware.checkLogin, orderController.remove);
 router.delete("/admin/order-transport/delete/:id", authMiddleware.checkLogin, orderController.removeTransport);
@@ -119,7 +120,8 @@ router.get("/admin/statistical", authMiddleware.checkLogin, statisticalControlle
 router.post("/admin/statistical", authMiddleware.checkLogin, statisticalController.handleTime);
 
 // router admin-manager
-router.get("/admin/manager", authMiddleware.checkLogin, managerController.index);
+router.get("/admin/manager/import", authMiddleware.checkLogin, managerController.importProduct);
+router.get("/admin/manager/soldOut", authMiddleware.checkLogin, managerController.soldOut);
 
 //router site
 router.get("/", authMiddleware.checkLoginSite, homeController.home);
@@ -159,6 +161,7 @@ router.get("/order", authMiddleware.checkLoginSite, authMiddleware.backLogin, or
 router.post("/order-buy", orderSiteController.orderBuy);
 router.get("/orderUser", authMiddleware.checkLoginSite, authMiddleware.backLogin, orderSiteController.orderUser);
 router.get("/orderDetail/:id", authMiddleware.checkLoginSite, authMiddleware.backLogin, orderSiteController.orderDetail);
+router.get("/orderDetailTrash/:id", authMiddleware.checkLoginSite, authMiddleware.backLogin, orderSiteController.orderDetailTrash);
 router.delete("/orderUser/remove/:id", authMiddleware.checkLoginSite, authMiddleware.backLogin, orderSiteController.remove);
 router.patch("/orderUser/restore/:id", authMiddleware.checkLoginSite, authMiddleware.backLogin, orderSiteController.restore);
 router.delete("/orderUser/force/:id", authMiddleware.checkLoginSite, authMiddleware.backLogin, orderSiteController.force);

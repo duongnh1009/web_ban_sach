@@ -60,7 +60,7 @@ const getRevenueByLast10Days = async (startDate, endDate) => {
           $group: {
             _id: null,
             totalRevenue: {
-              $sum: { $multiply: ["$validItems.price", "$validItems.qty"] },
+              $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"]},
             },
           },
         },
@@ -135,7 +135,7 @@ const getRevenueByWeekday = async () => {
           $group: {
             _id: null,
             totalRevenue: {
-              $sum: { $multiply: ["$validItems.price", "$validItems.qty"] },
+              $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"] },
             },
           },
         },
@@ -213,7 +213,7 @@ const getRevenueByMonth = async () => {
           $group: {
             _id: null,
             totalRevenue: {
-              $sum: { $multiply: ["$validItems.price", "$validItems.qty"] },
+              $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"] },
             },
           },
         },
@@ -303,7 +303,7 @@ const getRevenueByCustomDates = async (startDate, endDate) => {
             $group: {
               _id: null,
               totalRevenue: {
-                $sum: { $multiply: ["$validItems.price", "$validItems.qty"] },
+                $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"] },
               },
             },
           },

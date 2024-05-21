@@ -56,6 +56,7 @@ const registerStore = async(req, res) => {
     const {email, password, password_retype, fullName} = req.body;
     let error = '';
 
+    //kiem tra xem email da ton tai chua
     const users = await userModel.findOne({
         email: {$regex: new RegExp("^" + email + "$", "i")}
     })

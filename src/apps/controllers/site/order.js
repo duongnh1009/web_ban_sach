@@ -7,7 +7,7 @@ const order = (req, res) => {
 };
 
 const orderBuy = async (req, res) => {
-  const { name, phone, mail, address } = req.body;
+  const { name, phone, mail, address, payment } = req.body;
   const items = req.session.cart;
   const totalPrice = items.reduce((total, item) => {
     if(item.salePrice>0) {
@@ -21,6 +21,7 @@ const orderBuy = async (req, res) => {
     phone,
     mail,
     address,
+    payment,
     totalPrice,
     userSiteId: req.session.userSiteId,
     emailSite: req.session.emailSite,
@@ -82,6 +83,15 @@ const orderDetail = async (req, res) => {
   res.render("site/order/orderDetail", {order});
 }
 
+const orderDetailTrash = async (req, res) => {
+  const id = req.params.id;
+  const order = await orderModel.findOneWithDeleted({
+      id,
+      deleted: true
+  })
+  res.render("site/order/orderDetailTrash", {order})
+}
+
 const remove = async (req, res) => {
   const id = req.params.id;
   const order = await orderModel.findById(id);
@@ -121,6 +131,7 @@ module.exports = {
   orderDelivered,
   orderTrash,
   orderDetail,
+  orderDetailTrash,
   remove,
   restore,
   force

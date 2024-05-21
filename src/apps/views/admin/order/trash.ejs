@@ -58,7 +58,8 @@
                                                 <td><%=order.address%></td>
 												<td><%=moment(order.createdAt).format('DD/MM/YYYY')%></td>
 												<td class="form-group">
-													<a href="" class="btn btn-primary" data-toggle="modal" data-id="<%=order._id%>" data-target="#restore-item">Khôi phục</a>
+													<a href="/admin/order/detailTrash/<%=order._id%>" class="btn btn-primary">xem chi tiết</a>
+													<a href="" class="btn btn-success" data-toggle="modal" data-id="<%=order._id%>" data-target="#restore-item">Khôi phục</a>
 													<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=order._id%>" data-target="#delete-item">xóa</a>
 												</td>
 											</tr>

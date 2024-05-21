@@ -1,5 +1,3 @@
-const validator = require("validator")
-const bcryptjs = require("bcryptjs")
 const userModel = require("../../models/user")
 const pagination = require("../../../common/pagination")
 

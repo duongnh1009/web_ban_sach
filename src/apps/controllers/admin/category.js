@@ -1,6 +1,7 @@
 const slug = require("slug")
 const categoryModel = require("../../models/category");
 const pagination = require("../../../common/pagination");
+
 const index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 6;
@@ -46,6 +47,8 @@ const create = (req, res) => {
 const store = async (req, res) => {
     const {title} = req.body;
     let error = '';
+
+    //kiem tra xem danh muc da ton tai chua
     const categories = await categoryModel.findOne({
         slug: slug(title)
     });
@@ -60,7 +63,7 @@ const store = async (req, res) => {
     }
 
     else {
-        new categoryModel(category).save();
+        await categoryModel.create(category);
         req.flash('success', 'Thêm thành công !');
         res.redirect("/admin/category")
     }
@@ -78,6 +81,8 @@ const update = async (req, res) => {
     const id = req.params.id;
     const {title} = req.body;
     let error = '';
+
+    //kiem tra xem co cap nhat danh muc khong
     const categories = await categoryModel.findOne({
         _id: req.params.id
     });
@@ -98,7 +103,7 @@ const update = async (req, res) => {
         }
     }
     
-    await categoryModel.updateOne({_id: id}, {$set: category});
+    await categoryModel.findByIdAndUpdate(id, category);
     req.flash('success', 'Cập nhật thành công !');    
     res.redirect("/admin/category");    
 }

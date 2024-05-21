@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path")
 const bannerModel = require("../../models/banner");
 const pagination = require("../../../common/pagination");
+
 const index = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 6;
@@ -42,7 +43,7 @@ const create = (req, res) => {
     res.render("admin/banner/add_banner")
 }
 
-const store = (req, res) => {
+const store = async (req, res) => {
     const {body, file} = req;
     const banner = {
         category: body.category,
@@ -52,7 +53,7 @@ const store = (req, res) => {
         const img_banner = "products/"+file.originalname;
         fs.renameSync(file.path, path.resolve("src/public/images", img_banner));
         banner["img_banner"] = img_banner;
-        new bannerModel(banner).save();
+        await bannerModel.create(banner);
         req.flash('success', 'Thêm thành công !');
         res.redirect("/admin/banner");
     }
@@ -76,7 +77,7 @@ const update = async (req, res) => {
         fs.renameSync(file.path, path.resolve("src/public/images", img_banner));
         banner["img_banner"] = img_banner;
     }
-    await bannerModel.updateOne({_id: id},{$set: banner})
+    await bannerModel.findByIdAndUpdate(id, banner);
     req.flash('success', 'Cập nhật thành công !');
     res.redirect("/admin/banner");
 }

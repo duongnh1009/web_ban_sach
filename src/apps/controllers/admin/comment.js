@@ -1,5 +1,4 @@
 const commentModel = require("../../models/comment");
-const productModel = require("../../models/product");
 
 const index = async(req, res) => {
     const comments = await commentModel.find().sort({_id:-1}).populate("prd_id")

@@ -39,6 +39,10 @@ const orderSchema = mongoose.Schema({
         type: Number
     },
 
+    payment: {
+        type: String,
+    },
+
     items: {
         type: Object
     },

@@ -104,13 +104,22 @@ const orderDetail = async (req, res) => {
 
 const update = async (req, res) => {
     const id = req.params.id;
-    const {body} = req;
+    const {status} = req.body;
     const order = {
-        status: body.status
+        status
     }
-    await orderModel.updateOne({_id: id}, {$set: order})
+    await orderModel.findByIdAndUpdate(id, order);
     req.flash('success', 'Cập nhật thành công !');
     res.redirect("/admin/order");
+}
+
+const orderDetailTrash = async (req, res) => {
+    const id = req.params.id;
+    const order = await orderModel.findOneWithDeleted({
+        id,
+        deleted: true
+    })
+    res.render("admin/order/order-detailTrash", {order})
 }
 
 const restore = async (req, res) => {
@@ -170,6 +179,7 @@ module.exports = {
     delivered,
     orderDetail,
     update,
+    orderDetailTrash,
     restore,
     remove,
     removeTransport,

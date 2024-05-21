@@ -48,7 +48,8 @@
                                     <td><%=order.name%></td>
 									<td><%=moment(order.createdAt).format('DD/MM/YYYY')%></td>
                                     <td>
-                                        <a href="" class="btn btn-primary" data-toggle="modal" data-id="<%=order._id%>" data-target="#restore-item">Mua lại</a>
+                                        <a href="/orderDetailTrash/<%=order._id%>" class="btn btn-primary">xem chi tiết</a>
+                                        <a href="" class="btn btn-success" data-toggle="modal" data-id="<%=order._id%>" data-target="#restore-item">Mua lại</a>
 										<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=order._id%>" data-target="#delete-item">xóa</a>
                                     </td>
                                 </tr>
