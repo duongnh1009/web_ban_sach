@@ -55,9 +55,9 @@
                                             <b class="totalPrice">
                                                 <%=parseInt(cart.reduce((total, item)=> {
                                                     if(item.salePrice > 0) {
-                                                        return total +item.qty*item.salePrice
+                                                        return total + item.qty*item.salePrice
                                                     } else {
-                                                        return total +item.qty*item.price
+                                                        return total + item.qty*item.price
                                                     }
                                                 }, 0)).toLocaleString('en-us')%>đ
                                             </b>

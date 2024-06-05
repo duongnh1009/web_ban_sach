@@ -15,8 +15,8 @@ const comment = async(req, res) => {
         fullNameSite,
         content
     }
-    await new commentModel(comment).save();
-    res.redirect(req.path)
+    await commentModel.create(comment);
+    res.redirect(req.path);
 }
 
 const editComment = async(req, res) => {

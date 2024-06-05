@@ -88,7 +88,6 @@ const search = async (req, res) => {
         $or: [
             { fullName: { $regex: new RegExp(keyword, 'i') } },
             { email: { $regex: new RegExp(keyword, 'i') } },
-            { role: { $regex: new RegExp(keyword, 'i') } },
         ],
     })
     const totalPages = Math.ceil(total.length/limit);
@@ -100,7 +99,6 @@ const search = async (req, res) => {
         $or: [
             { fullName: { $regex: new RegExp(keyword, 'i') } },
             { email: { $regex: new RegExp(keyword, 'i') } },
-            { role: { $regex: new RegExp(keyword, 'i') } },
         ],
     }).skip(skip).limit(limit)
     const userRemove = await userModel.countWithDeleted({

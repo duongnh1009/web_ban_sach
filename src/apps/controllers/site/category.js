@@ -24,7 +24,7 @@ const category = async (req, res) => {
     const orders = await orderModel.aggregate([
         {
           $match: {
-            status: "Đã giao", // Chỉ lấy các đơn hàng đã giao
+            status: "Đã giao hàng", // Chỉ lấy các đơn hàng đã giao
           },
         },
         {

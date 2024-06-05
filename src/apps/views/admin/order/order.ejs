@@ -27,7 +27,7 @@
             </a>
 
 			<a style="margin: 0 10px;" href="/admin/order/trash" class="btn btn-danger">
-				Thùng rác (<%=orderRemove%>)
+				Đã hủy đơn (<%=orderRemove%>)
 			</a>
 
 			<div>
@@ -51,9 +51,8 @@
 									<thead>
 									<tr>
 										<th>Tên tài khoản</th>
-                                        <th>Email đăng kí</th>
-										<th>Tên người nhận</th>
 										<th>Thời gian đặt hàng</th>
+										<th>Tình trạng</th>
 										<th>Hành động</th>
 									</tr>
 									</thead>
@@ -61,9 +60,8 @@
 										<%for(order of orders) {%>
 											<tr>
 												<td><%=order.fullNameSite%></td>
-                                                <td><%=order.emailSite%></td>
-												<td><%=order.name%></td>
 												<td><%=moment(order.createdAt).format('DD/MM/YYYY')%></td>
+												<td><%=order.status%></td>
 												<td class="form-group">
 													<a href="/admin/order/detail/<%=order._id%>" class="btn btn-primary">xem chi tiết</a>
 													<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=order._id%>" data-target="#delete-item">xóa</a>

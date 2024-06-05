@@ -16,10 +16,12 @@ const home = async (req, res) => {
           productsByCategory[category.title] = products;
         }
     }
+
+    //hien thi so luong ban cua san pham
     const orders = await orderModel.aggregate([
         {
           $match: {
-            status: "Đã giao", // Chỉ lấy các đơn hàng đã giao
+            status: "Đã giao hàng", // Chỉ lấy các đơn hàng đã giao
           },
         },
         {
@@ -28,7 +30,7 @@ const home = async (req, res) => {
         {
           $group: {
             _id: {
-              productName: "$items.name", // Nhóm theo tên sản phẩm1
+              productName: "$items.name", // Nhóm theo tên sản phẩm
             },
             totalQuantity: { $sum: "$items.qty" }, // Tính tổng số lượng đã bán
             productName: { $first: "$items.name" }, // Giữ lại tên sản phẩm

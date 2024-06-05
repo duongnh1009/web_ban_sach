@@ -39,28 +39,14 @@ const getRevenueByLast10Days = async (startDate, endDate) => {
               $gte: startOfDay,
               $lte: endOfDay,
             },
-            status: "Đã giao",
+            status: "Đã giao hàng",
           },
-        },
-        {
-          $addFields: {
-            validItems: {
-              $filter: {
-                input: "$items",
-                as: "item",
-                cond: { $ne: ["$$item", {}] }, // Loại bỏ các mục items rỗng
-              },
-            },
-          },
-        },
-        {
-          $unwind: "$validItems", // Tách mỗi mục hàng thành một document riêng biệt
         },
         {
           $group: {
             _id: null,
             totalRevenue: {
-              $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"]},
+              $sum: "$totalPrice",
             },
           },
         },
@@ -114,28 +100,14 @@ const getRevenueByWeekday = async () => {
                 currentDay.getDate() + 1
               ),
             },
-            status: "Đã giao",
+            status: "Đã giao hàng",
           },
-        },
-        {
-          $addFields: {
-            validItems: {
-              $filter: {
-                input: "$items",
-                as: "item",
-                cond: { $ne: ["$$item", {}] }, // Loại bỏ các mục items rỗng
-              },
-            },
-          },
-        },
-        {
-          $unwind: "$validItems", // Tách mỗi mục hàng thành một document riêng biệt
         },
         {
           $group: {
             _id: null,
             totalRevenue: {
-              $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"] },
+              $sum: "$totalPrice",
             },
           },
         },
@@ -192,28 +164,14 @@ const getRevenueByMonth = async () => {
               $gte: startOfMonth,
               $lte: endOfMonth,
             },
-            status: "Đã giao",
+            status: "Đã giao hàng",
           },
-        },
-        {
-          $addFields: {
-            validItems: {
-              $filter: {
-                input: "$items",
-                as: "item",
-                cond: { $ne: ["$$item", {}] }, // Loại bỏ các mục items rỗng
-              },
-            },
-          },
-        },
-        {
-          $unwind: "$validItems", // Tách mỗi mục hàng thành một document riêng biệt
         },
         {
           $group: {
             _id: null,
             totalRevenue: {
-              $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"] },
+              $sum: "$totalPrice",
             },
           },
         },
@@ -282,28 +240,14 @@ const getRevenueByCustomDates = async (startDate, endDate) => {
                 $gte: startOfDate,
                 $lte: endOfDate,
               },
-              status: "Đã giao",
+              status: "Đã giao hàng",
             },
-          },
-          {
-            $addFields: {
-              validItems: {
-                $filter: {
-                  input: "$items",
-                  as: "item",
-                  cond: { $ne: ["$$item", {}] },
-                },
-              },
-            },
-          },
-          {
-            $unwind: "$validItems",
           },
           {
             $group: {
               _id: null,
               totalRevenue: {
-                $sum: { $multiply: ["$validItems.salePrice", "$validItems.qty"] },
+                $sum: "$totalPrice",   
               },
             },
           },

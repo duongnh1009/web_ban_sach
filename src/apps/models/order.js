@@ -5,10 +5,6 @@ const orderSchema = mongoose.Schema({
         type: String
     },
 
-    emailSite: {
-        type: String
-    },
-
     fullNameSite: {
         type: String
     },

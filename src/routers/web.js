@@ -104,7 +104,6 @@ router.get("/admin/order-delivered", authMiddleware.checkLogin, orderController.
 router.get("/admin/order/detail/:id", authMiddleware.checkLogin, orderController.orderDetail),
 router.post("/admin/order/detail/:id", authMiddleware.checkLogin, orderController.update);
 router.get("/admin/order/detailTrash/:id", authMiddleware.checkLogin, orderController.orderDetailTrash),
-router.patch("/admin/order/restore/:id", authMiddleware.checkLogin, orderController.restore);
 router.delete("/admin/order/delete/:id", authMiddleware.checkLogin, orderController.remove);
 router.delete("/admin/order-transport/delete/:id", authMiddleware.checkLogin, orderController.removeTransport);
 router.delete("/admin/order-delivered/delete/:id", authMiddleware.checkLogin, orderController.removeDelivered);

@@ -18,7 +18,11 @@
                                     <p>
                                         <span class="price-sale"><%=parseInt(product.salePrice).toLocaleString('en-us')%>đ</span>
                                         <span class="price-old"><%=parseInt(product.price).toLocaleString('en-us')%>đ</span>
-                                        <span class="sale-prices">-<%=product.sale%>%</span>
+                                        <%if(product.sale<=100) {%>
+                                            <span class="sale-prices">-<%=product.sale%>%</span>
+                                        <%} else { %>
+                                            <span class="sale-prices">-<%=product.sale%>đ</span>
+                                        <%}%>
                                     </p>
                                 <%} else {%>
                                     <p>

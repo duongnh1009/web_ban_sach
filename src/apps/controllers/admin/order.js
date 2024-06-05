@@ -45,7 +45,7 @@ const transport = async (req, res) => {
     const limit = 6;
     const skip = page*limit - limit;
     const total = await orderModel.find({
-        status: "Đang giao"
+        status: "Đang giao hàng"
     })
     const totalPages = Math.ceil(total.length/limit);
     const next = page + 1;
@@ -53,7 +53,7 @@ const transport = async (req, res) => {
     const hasNext = page < totalPages ? true : false;
     const hasPrev = page > 1 ? true : false;
     const orders = await orderModel.find({
-        status: "Đang giao"
+        status: "Đang giao hàng"
     }).sort({_id: -1}).skip(skip).limit(limit)
 
     res.render("admin/order/order-transport", {
@@ -73,7 +73,7 @@ const delivered = async (req, res) => {
     const limit = 6;
     const skip = page*limit - limit;
     const total = await orderModel.find({
-        status: "Đã giao"
+        status: "Đã giao hàng"
     })
     const totalPages = Math.ceil(total.length/limit);
     const next = page + 1;
@@ -81,7 +81,7 @@ const delivered = async (req, res) => {
     const hasNext = page < totalPages ? true : false;
     const hasPrev = page > 1 ? true : false;
     const orders = await orderModel.find({
-        status: "Đã giao"
+        status: "Đã giao hàng"
     }).sort({_id: -1}).skip(skip).limit(limit)
 
     res.render("admin/order/order-delivered", {
@@ -120,13 +120,6 @@ const orderDetailTrash = async (req, res) => {
         deleted: true
     })
     res.render("admin/order/order-detailTrash", {order})
-}
-
-const restore = async (req, res) => {
-    const id = req.params.id;
-    await orderModel.restore({_id: id});
-    req.flash('success', 'Khôi phục thành công !');
-    res.redirect("/admin/order/trash")
 }
 
 const force = async (req, res) => {
@@ -180,7 +173,6 @@ module.exports = {
     orderDetail,
     update,
     orderDetailTrash,
-    restore,
     remove,
     removeTransport,
     removeDelivered,

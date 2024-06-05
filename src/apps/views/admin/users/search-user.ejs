@@ -27,7 +27,7 @@
             </a>
 
             <a style="margin: 0 10px;" href="/admin/user/trash" class="btn btn-danger">
-                <i class="glyphicon glyphicon-trash"></i> Thùng rác (<%=userRemove%>)
+                <i class="glyphicon glyphicon-trash"></i> Đã xóa (<%=userRemove%>)
             </a>
 
             <div>
@@ -50,7 +50,7 @@
 
 						    <thead>
 						    <tr>
-						        <th data-field="name"  data-sortable="true">Họ & Tên</th>
+						        <th data-field="name"  data-sortable="true">Tên tài khoản</th>
                                 <th data-field="price" data-sortable="true">Email</th>
                                 <th>Quyền</th>
                                 <th>Hành động</th>
@@ -63,27 +63,18 @@
                                         <td><%=user.email%></td>
                                         <td><span class="label label-<%=user.role==='Admin'?'success':'danger'%>"><%=user.role%></span></td>
                                         <td class="form-group">
-											<%if(user.role === "Admin") {%>
-												<a href="/admin/user/edit/<%=user._id%>" class="btn btn-primary">Thay đổi</a>
-												<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
+											<%if(!user.isLocked) {%>
+												<div style="display: flex;">
+													<a style="margin-right: 5px;" href="" class="btn btn-primary" data-toggle="modal" data-id="<%=user._id%>" data-target="#lock-item">Khoá tài khoản</a>
+													<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
+												</div>
 											<%} else { %>
-												<%if(!user.isLocked) {%>
-													<div style="display: flex;">
-														<form style="margin-right: 5px;" action="/admin/user/lockAccount/<%= user._id%>" method="post">
-															<button class="btn btn-primary" type="submit">Khóa tài khoản</button>
-														</form>
-														<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
-													</div>
-												<%} else { %>
-													<div style="display: flex;">
-														<form style="margin-right: 5px;" action="/admin/user/unlockAccount/<%= user._id%>" method="post">
-															<button class="btn btn-success" type="submit">Mở tài khoản</button>
-														</form>
-														<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
-													</div>
-												<%}%>
+												<div style="display: flex;">
+													<a style="margin-right: 5px;" href="" class="btn btn-success" data-toggle="modal" data-id="<%=user._id%>" data-target="#unlock-item">Mở tài khoản</a>
+													<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=user._id%>" data-target="#delete-item">Xóa</a>
+												</div>
 											<%}%>
-                                        </td>
+										</td>
                                     </tr>
                                 <%}%>
                             </tbody>
@@ -136,22 +127,88 @@
 		</div>
 	</div>
 
+	<div id="lock-item" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Khóa tài khoản ?</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+			  <p>Bạn muốn khóa tài khoản này không ?</p>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary" data-dismiss="modal">Hủy</button>
+			  <button id="btn-lock" type="button" class="btn btn-danger">Khóa tài khoản</button>
+			</div>
+		  </div>
+		</div>
+	</div>
+
+	<div id="unlock-item" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+		  <div class="modal-content">
+			<div class="modal-header">
+			  <h5 class="modal-title">Mở khóa tài khoản ?</h5>
+			  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			  </button>
+			</div>
+			<div class="modal-body">
+			  <p>Bạn muốn mở khóa tài khoản này không ?</p>
+			</div>
+			<div class="modal-footer">
+			  <button type="button" class="btn btn-primary" data-dismiss="modal">Hủy</button>
+			  <button id="btn-unlock" type="button" class="btn btn-danger">Mở khóa tài khoản</button>
+			</div>
+		  </div>
+		</div>
+	</div>
+
 	<form id="delete-form" method="POST"></form>
+	<form id="lock-form" method="POST"></form>
+	<form id="unlock-form" method="POST"></form>
 
 	<script>
 		document.addEventListener("DOMContentLoaded", function() {
 			var itemId;
 			var deleteForm = document.forms['delete-form'];
+			var lockForm = document.forms['lock-form'];
+			var unlockForm = document.forms['unlock-form'];
 			var btnDelete = document.getElementById("btn-delete");
+			var btnLock = document.getElementById("btn-lock");
+			var btnUnLock = document.getElementById("btn-unlock");
 
 			$('#delete-item').on('show.bs.modal', function (event) {
 				var button = $(event.relatedTarget); 
 				itemId = button.data('id');
 			});
 
+			$('#lock-item').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget); 
+				itemId = button.data('id');
+			});
+
+			$('#unlock-item').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget); 
+				itemId = button.data('id');
+			});
+			
 			btnDelete.onclick = function() {
 				deleteForm.action = '/admin/user/delete/' + itemId + '?_method=DELETE';
 				deleteForm.submit();
+			}
+
+			btnLock.onclick = function() {
+				lockForm.action = '/admin/user/lockAccount/' + itemId + '?_method=PATCH';
+				lockForm.submit();
+			}
+
+			btnUnLock.onclick = function() {
+				lockForm.action = '/admin/user/unlockAccount/' + itemId + '?_method=PATCH';
+				lockForm.submit();
 			}
 		})
 	</script>

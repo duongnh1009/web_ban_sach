@@ -43,23 +43,20 @@
 		
 									<thead>
 									<tr>
-										<th>Tên khách hàng</th>
-                                        <th>Số điện thoại</th>
-                                        <th>Địa chỉ</th>
+										<th>Tên tài khoản</th>
 										<th>Thời gian đặt hàng</th>
+										<th>Tình trạng</th>
 										<th>Hành động</th>
 									</tr>
 									</thead>
 									<tbody>
 										<%for(order of orders) {%>
 											<tr>
-												<td><%=order.name%></td>
-                                                <td><%=order.phone%></td>
-                                                <td><%=order.address%></td>
+												<td><%=order.fullNameSite%></td>
 												<td><%=moment(order.createdAt).format('DD/MM/YYYY')%></td>
+												<td>Đã hủy</td>
 												<td class="form-group">
 													<a href="/admin/order/detailTrash/<%=order._id%>" class="btn btn-primary">xem chi tiết</a>
-													<a href="" class="btn btn-success" data-toggle="modal" data-id="<%=order._id%>" data-target="#restore-item">Khôi phục</a>
 													<a href="" class="btn btn-danger" data-toggle="modal" data-id="<%=order._id%>" data-target="#delete-item">xóa</a>
 												</td>
 											</tr>

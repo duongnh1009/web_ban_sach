@@ -61,8 +61,7 @@ const registerStore = async(req, res) => {
 
     //ma hoa mat khau
     const hashPass = await bcryptjs.hash(password, 10);
-
-
+    
     const user = {
        email,
        password: hashPass,

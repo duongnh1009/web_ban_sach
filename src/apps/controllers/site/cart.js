@@ -24,7 +24,7 @@ const addToCart = async (req, res) => {
       salePrice: product.salePrice,
       img: product.thumbnail,
       qty: parseInt(qty),
-      quantity: parseInt(product.quantity),
+      quantity: product.quantity - parseInt(qty),
     });
   }
   req.session.cart = cart;

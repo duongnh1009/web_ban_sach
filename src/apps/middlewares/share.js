@@ -12,11 +12,11 @@ module.exports = async (req, res, next) => {
     })).length;
 
     res.locals.orderTransport = (await orderModel.find({
-        status: 'Đang giao'
+        status: 'Đang giao hàng'
     })).length;
 
     res.locals.orderDelive = (await orderModel.find({
-        status: 'Đã giao'
+        status: 'Đã giao hàng'
     })).length;
 
     res.locals.orderRemove = await orderModel.countWithDeleted({
@@ -31,12 +31,12 @@ module.exports = async (req, res, next) => {
 
     res.locals.orderSiteTransport = (await orderModel.find({
         userSiteId,
-        status: 'Đang giao'
+        status: 'Đang giao hàng'
     })).length;
 
     res.locals.orderSiteDelive = (await orderModel.find({
         userSiteId,
-        status: 'Đã giao'
+        status: 'Đã giao hàng'
     })).length;
 
     res.locals.orderSiteRemove = await orderModel.countWithDeleted({

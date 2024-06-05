@@ -107,7 +107,12 @@ const store = async (req, res) => {
     description,
     slug: slug(name),
   };
-  product.salePrice = product.price - (product.sale * product.price) / 100;
+
+  if(product.sale <=100) {
+    product.salePrice = product.price - (product.sale * product.price) / 100;
+  } else {
+    product.salePrice = product.price - product.sale;
+  }
 
   if (products) {
     error = "Tên sản phẩm đã tồn tại !";
@@ -181,7 +186,13 @@ const update = async (req, res) => {
     fs.renameSync(file.path, path.resolve("src/public/images", thumbnail));
     product["thumbnail"] = thumbnail;
   }
-  product.salePrice = product.price - (product.sale * product.price) / 100;
+
+  if(product.sale <=100) {
+    product.salePrice = product.price - (product.sale * product.price) / 100;
+  } else {
+    product.salePrice = product.price - product.sale;
+  }
+  
   await productModel.findByIdAndUpdate(id, product);
   req.flash("success", "Cập nhật thành công !");
   res.redirect("/admin/product");

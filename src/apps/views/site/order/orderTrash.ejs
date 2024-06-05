@@ -34,9 +34,8 @@
                     <thead>
                         <tr>
                             <th scope="col">Tên tài khoản</th>
-                            <th scope="col">Email đăng kí</th>
-                            <th scope="col">Tên người nhận</th>
                             <th scope="col">Thời gian đặt hàng</th>
+                            <th scope="col">Tình trạng đơn hàng</th>
                             <th scope="col">Hành động</th>
                         </tr>
                     </thead>
@@ -44,9 +43,8 @@
                         <%for(order of orders) {%>
                                 <tr>
                                     <td><%=order.fullNameSite%></td>
-                                    <td><%=order.emailSite%></td>
-                                    <td><%=order.name%></td>
 									<td><%=moment(order.createdAt).format('DD/MM/YYYY')%></td>
+                                    <td>Đã hủy</td>
                                     <td>
                                         <a href="/orderDetailTrash/<%=order._id%>" class="btn btn-primary">xem chi tiết</a>
                                         <a href="" class="btn btn-success" data-toggle="modal" data-id="<%=order._id%>" data-target="#restore-item">Mua lại</a>

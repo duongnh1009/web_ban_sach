@@ -18,6 +18,7 @@ const getTotalPurchaseByDayAndProduct = async() => {
               },
             },
             product: "$name",
+            quantity: "$quantity",
           },
           totalQuantity: { $sum: "$purchaseHistory.quantity" },
         },
@@ -28,12 +29,10 @@ const getTotalPurchaseByDayAndProduct = async() => {
           _id: 0,
           day: "$_id.day",
           product: "$_id.product",
+          quantity: "$_id.quantity",
           totalQuantity: 1,
         },
-      },
-      {
-        $sort: { date: -1 }, // Sắp xếp theo thời gian giảm dần
-      },
+      }
     ]);
     return result;
   } catch (error) {
@@ -49,11 +48,11 @@ const getSoldItemsByProductNameAndTime = async() => {
     const soldItemsByProductNameAndTime = await orderModel.aggregate([
       {
         $match: {
-          status: "Đã giao", // Chỉ lấy các đơn hàng đã giao
+          status: "Đã giao hàng", // Chỉ lấy các đơn hàng đã giao
         },
       },
       {
-        $unwind: "$items", // Tách mỗi mục hàng thành một document riêng biệt
+        $unwind: "$items",  // Tách mỗi mục hàng thành một document riêng biệt
       },
       {
         $match: {
@@ -70,6 +69,7 @@ const getSoldItemsByProductNameAndTime = async() => {
             day: { $dayOfMonth: "$createdAt" }, // Nhóm theo ngày
           },
           totalQuantity: { $sum: "$items.qty" }, // Tính tổng số lượng đã bán
+          quantity: { $last: "$items.quantity" }, // Tính tổng số lượng tồn kho
           productName: { $first: "$items.name" }, // Giữ lại tên sản phẩm
         },
       },
@@ -90,11 +90,9 @@ const getSoldItemsByProductNameAndTime = async() => {
             },
           },
           totalQuantity: 1,
+          quantity: 1,
         },
-      },
-      {
-        $sort: { date: -1 }, // Sắp xếp theo thời gian giảm dần
-      },
+      }
     ]);
 
     return soldItemsByProductNameAndTime;
@@ -112,7 +110,7 @@ const getProductSales = async () => {
   try {
     const productSales = await orderModel.aggregate([
       // Match orders with status "Đã giao"
-      { $match: { status: "Đã giao" } },
+      { $match: { status: "Đã giao hàng" } },
       // Unwind the items array to treat each item as a separate document
       { $unwind: "$items" },
       // Group by product name and sum up the total quantity sold
@@ -199,6 +197,10 @@ const importProduct = async (req, res) => {
   };
 
   const dataImportProductTable = await getTotalPurchaseByDayAndProduct();
+  //sap xep thoi gian giam dan
+  dataImportProductTable.sort((a,b) => {
+    return new Date(b.day) - new Date(a.day);
+  })
   res.render("admin/manager/import", {
     dataImportProductTable,
     dataRestock,
@@ -239,6 +241,10 @@ const soldOut = async(req, res) => {
   };
 
   const dataSoldProductTable = await getSoldItemsByProductNameAndTime();
+  //sap xep thoi gian giam dan
+  dataSoldProductTable.sort((a,b) => {
+    return new Date(b.date) - new Date(a.date);
+  })
   res.render("admin/manager/soldOut", {
     dataSoldProductTable,
     PieChart

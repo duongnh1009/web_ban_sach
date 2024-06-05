@@ -24,7 +24,6 @@ const orderBuy = async (req, res) => {
     payment,
     totalPrice,
     userSiteId: req.session.userSiteId,
-    emailSite: req.session.emailSite,
     fullNameSite: req.session.fullNameSite,
     items,
   };
@@ -37,7 +36,7 @@ const orderBuy = async (req, res) => {
     }
   }
   
-  new orderModel(orderList).save();
+  await orderModel.create(orderList);
   req.session.cart = [];
   res.redirect("/success");
 };
@@ -55,7 +54,7 @@ const orderTransport = async (req, res) => {
   const userSiteId = req.session.userSiteId; // Sử dụng session để lấy userSiteId
   const orders = await orderModel.find({
     userSiteId,
-    status: "Đang giao",
+    status: "Đang giao hàng",
   }).sort({_id: -1});
   res.render("site/order/orderTransport", { orders, moment });
 };
@@ -64,7 +63,7 @@ const orderDelivered = async (req, res) => {
   const userSiteId = req.session.userSiteId; // Sử dụng session để lấy userSiteId
   const orders = await orderModel.find({
     userSiteId,
-    status: "Đã giao",
+    status: "Đã giao hàng",
   }).sort({_id: -1});
   res.render("site/order/orderDelivered", { orders, moment });
 };
@@ -111,6 +110,19 @@ const remove = async (req, res) => {
 
 const restore = async (req, res) => {
   const id = req.params.id;
+  const order = await orderModel.findOneWithDeleted({
+    id,
+    deleted: true
+  });
+
+  //cap nhat lai so luong khi nguoi dung mua lai don hang
+  for (const item of order.items) {
+    const product = await productModel.findById(item.id);
+    if (product) {
+      product.quantity -= item.qty;
+      await product.save();
+    }
+  }
   await orderModel.restore({_id: id});
   req.flash('success', 'Mua lại thành công !');
   res.redirect("/orderTrash")
