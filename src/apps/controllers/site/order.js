@@ -3,7 +3,8 @@ const orderModel = require("../../models/order");
 const productModel = require("../../models/product");
 
 const order = (req, res) => {
-  res.render("site/order/order");
+  const cart = req.session.cart;
+  res.render("site/order/order", {cart});
 };
 
 const orderBuy = async (req, res) => {
