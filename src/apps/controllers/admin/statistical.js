@@ -184,9 +184,7 @@ const getRevenueByMonth = async () => {
       ]);
 
       // Thêm kết quả vào mảng
-      const monthYear = `${
-        startOfMonth.getMonth() + 1
-      }-${startOfMonth.getFullYear()}`;
+      const monthYear = `${startOfMonth.getMonth() + 1} - ${startOfMonth.getFullYear()}`;
       revenueBy12Months.push({
         monthYear,
         totalRevenue:

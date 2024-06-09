@@ -12,9 +12,7 @@ const addToCart = async (req, res) => {
     return item;
   });
   if (!isProduct) {
-    const product = await productModel
-      .findById(id)
-      .populate({ path: "cat_id" });
+    const product = await productModel.findById(id).populate("cat_id");
     cart.push({
       id,
       name: product.name,

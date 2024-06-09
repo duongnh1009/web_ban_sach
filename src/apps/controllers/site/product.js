@@ -15,7 +15,7 @@ const product = async (req, res) => {
         _id: {
           $ne: productById.id
         }
-    }).limit(8)
+    }).limit(8);
 
     //hien thi san pham cung tac gia
     const authors = await productModel.find({
@@ -46,7 +46,7 @@ const product = async (req, res) => {
         },
       },
     ]);
-    res.render("site/product/product", {productById, comments, productByCatId, authors, orders, moment})
+    res.render("site/product/product", {productById, comments, productByCatId, authors, orders, moment});
 }
 
 module.exports = {

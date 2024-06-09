@@ -55,12 +55,6 @@ const getSoldItemsByProductNameAndTime = async() => {
         $unwind: "$items",  // Tách mỗi mục hàng thành một document riêng biệt
       },
       {
-        $match: {
-          "items.qty": { $gt: 0 }, // Loại bỏ các mục hàng có số lượng nhỏ hơn hoặc bằng 0
-        },
-      },
-      
-      {
         $group: {
           _id: {
             productName: "$items.name", // Nhóm theo tên sản phẩm

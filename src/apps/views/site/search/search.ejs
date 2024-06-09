@@ -31,6 +31,12 @@
                                     <span class="price-olds"><%=parseInt(product.price).toLocaleString('en-us')%>đ</span>
                                 </p>
                             <%}%>
+
+                            <%for(order of orders) {%>
+                                <%if(order.productName === product.name) {%>
+                                    <p><span>Đã bán: <%=order.totalQuantity%></span></p>
+                                <%}%>
+                            <%}%>
                         </div>
                     </div>
                     <%}%>
