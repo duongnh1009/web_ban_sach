@@ -61,7 +61,7 @@
                                                     <%= data.totalQuantity %>
                                                 </td>
                                                 <td>
-                                                    <%= data.quantity %>
+                                                    <%= data.productDetails[0].quantity %>
                                                 </td>
                                                 <td>
                                                     <%= data.date %>
@@ -81,7 +81,7 @@
     <!-- bar char -->
     <!-- chart sales product -->
     <script>
-        var ctxPie = document.getElementById('pieChart').getContext('2d');
+        var ctxPie = document.getElementById('pieChart');
         let dataPie = '<%= PieChart.data.labels %>';
         let dataArrayPie = dataPie.split(",")
         var myChartPie = new Chart(ctxPie, {
@@ -91,8 +91,7 @@
                 datasets: [{
                     label: 'Tổng số lượng đã bán',
                     data: <%= JSON.stringify(PieChart.data.datasets[0].data) %>,
-                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(0,0,255)'],
-                    hoverOffset: 4
+                    backgroundColor: ['red', 'blue', 'green', 'yellow', 'tomato', 'pink', 'black'],
                 }]
             }
         });

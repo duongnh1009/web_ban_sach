@@ -9,12 +9,13 @@ const login = (req, res) => {
     res.render("site/auth/login", {error})
 }
 
+// đăng nhập
 const postLogin = async(req, res) => {
     const {email, password} = req.body;
     let error = '';
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ email }); // kiểm tra xem email đã được đăng kí chưa
     if (!user) {
-        error = "Tài khoản không tồn tại !"
+        error = "Email chưa được đăng kí !"
         return res.render("site/auth/login", {error});
     }
 
@@ -46,13 +47,14 @@ const register = (req, res) => {
     res.render("site/auth/register", {error})
 }
 
+// đăng kí
 const registerStore = async(req, res) => {
     const {email, password, password_retype, fullName} = req.body;
     let error = '';
 
     const users = await userModel.findOne({
         email: {$regex: new RegExp("^" + email + "$", "i")}
-    })
+    }) // kiem tra xem email da duoc dang ki chua
 
     //kiem tra dinh dang email
     function isValidEmail(email) {
@@ -69,7 +71,7 @@ const registerStore = async(req, res) => {
     }
 
     if(users) {
-        error = 'Email đã tồn tại !'
+        error = 'Email đã được đăng kí !'
     }
 
     else if(!isValidEmail(email)) {
@@ -85,7 +87,7 @@ const registerStore = async(req, res) => {
     }
 
     else {
-        new userModel(user).save();
+        await userModel.create(user);
         req.flash('success', 'Đăng kí thành công !');
         res.redirect("/register")
     }
@@ -101,10 +103,10 @@ const changePassword = (req, res) => {
 const updatePass = async(req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
     let error = ''
-    const user = await userModel.findById(req.session.userSiteId);
+    const user = await userModel.findById(req.session.userSiteId); // kiem tra id tai khoan đang đăng nhập
     if (!user || !(await bcryptjs.compare(currentPassword, user.password))) {
         error = "Mật khẩu cũ không chính xác !"
-    }
+    } // kiểm tra mật khẩu cũ
 
     else if(newPassword.length < 6) {
         error = "Mật khẩu tối thiểu 6 kí tự !"

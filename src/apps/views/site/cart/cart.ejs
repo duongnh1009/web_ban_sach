@@ -26,7 +26,7 @@
 
                                     <div quantity="<%=item.quantity%>" class="d-flex cart-quantity col-lg-3 col-md-3 col-sm-12">
                                         <h3 style="cursor: pointer;" class="minus">-</h3>
-                                        <input name="products[<%=item.id%>][qty]" type="text" class="form-control form-blue quantity input_quantity" value="<%=item.qty%>" min="1">
+                                        <input name="products[<%=item.id%>][qty]" type="text" class="form-control form-blue input_quantity" value="<%=item.qty%>" min="1">
                                         <h3 style="cursor: pointer;" class="plus">+</h3>
                                     </div>
                                     <%if(item.salePrice> 0) {%>

@@ -55,7 +55,7 @@
                                             <td><%=parseInt(product.price).toLocaleString('en-us')%> đ</td>
                                         <%}%>
                                         <td style="text-align: center"><img width="150" height="150" src="/static/images/<%=product.thumbnail%>" /></td>
-                                        <td><span class="label label-<%=product.is_stock?'success':'danger'%>"><%=product.is_stock?"còn hàng":"hết hàng"%></span></td>
+                                        <td><span class="label label-<%=product.is_stock?'success':'danger'%>">Đã xóa</span></td>
                                         <td><%=product.cat_id.title%></td>
                                         <td class="form-group">
                                             <a href="" class="btn btn-primary" data-toggle="modal" data-id="<%=product._id%>" data-target="#restore-item">Khôi phục</a>

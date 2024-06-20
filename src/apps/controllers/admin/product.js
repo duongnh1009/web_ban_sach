@@ -275,7 +275,7 @@ const search = async (req, res) => {
 };
 
 const restock = (req, res) => {
-  const productId = req.params.id;
+  const id = req.params.id;
   const { new_quantity } = req.body;
 
   const newPurchase = {
@@ -284,13 +284,13 @@ const restock = (req, res) => {
   };
 
   productModel.findByIdAndUpdate(
-    productId,
+    id,
     {
       $push: { purchaseHistory: newPurchase },
-      $inc: { quantity: newPurchase.quantity },
+      $inc: { quantity: newPurchase.quantity }, // cập nhật số lượng khi người dùng thêm số lượng
     }, 
-    { new: true, useFindAndModify: false }, 
-    (err, updatedProduct) => {
+    { new: true }, 
+    (err) => {
       if (err) {
         req.flash("success", "Lỗi khi cập nhật sản phẩm !");
       } else {

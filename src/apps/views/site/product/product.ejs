@@ -31,7 +31,7 @@
                             <div class="product-number">
                                 Số lượng: 
                                 <span onclick="decreaseQuantity()" style="margin-left: 10px;">-</span>
-                                <input name="qty" id="qty" value="1" min="1">
+                                <input name="qty" id="qty" value="1">
                                 <span onclick="increaseQuantity()">+</span>
                             </div>
 
@@ -111,7 +111,11 @@
                                         <p>
                                             <span class="price-sale"><%=parseInt(author.salePrice).toLocaleString('en-us')%>đ</span>
                                             <span class="price-old"><%=parseInt(author.price).toLocaleString('en-us')%>đ</span>
-                                            <span class="sale-prices">-<%=author.sale%>%</span>
+                                            <%if(author.sale<=100) {%>
+                                                <span class="sale-prices">-<%=author.sale%>%</span>
+                                            <%} else { %>
+                                                <span class="sale-prices">-<%=author.sale%>đ</span>
+                                            <%}%>
                                         </p>
                                     <%} else {%>
                                         <p>
@@ -144,7 +148,11 @@
                                         <p>
                                             <span class="price-sale"><%=parseInt(product.salePrice).toLocaleString('en-us')%>đ</span>
                                             <span class="price-old"><%=parseInt(product.price).toLocaleString('en-us')%>đ</span>
-                                            <span class="sale-prices">-<%=product.sale%>%</span>
+                                            <%if(product.sale<=100) {%>
+                                                <span class="sale-prices">-<%=product.sale%>%</span>
+                                            <%} else { %>
+                                                <span class="sale-prices">-<%=product.sale%>đ</span>
+                                            <%}%>
                                         </p>
                                     <%} else {%>
                                         <p>
@@ -157,6 +165,40 @@
                                             <p><span>Đã bán: <%=order.totalQuantity%></span></p>
                                         <%}%>
                                     <%}%>
+                                </div>
+                            </div>
+                        <%}%>
+                    </div>
+                </div>
+            <%}%>
+
+            <%if(productBestSell.length>0) {%>
+                <div style="margin-top: 30px;" id="products" class="col-lg-12">
+                    <h3>Sản phẩm bán chạy</h3>
+                    <div class="products-list row">
+                        <%for(product of productBestSell){ %>
+                            <div class="products-item col-lg-3">
+                                <div class="products-content">
+                                    <a href="/product-<%=product.slug%>.<%=product._id%>"> 
+                                        <img src="/static/images/<%=product.productDetails[0].thumbnail%>" alt="">
+                                    </a>
+                                    <h4><a href="/product-<%=product.slug%>.<%=product._id%>"><%=product.productName%></a></h4>
+                                    <%if(product.productDetails[0].sale > 0) {%>
+                                        <p>
+                                            <span class="price-sale"><%=parseInt(product.productDetails[0].salePrice).toLocaleString('en-us')%>đ</span>
+                                            <span class="price-old"><%=parseInt(product.productDetails[0].price).toLocaleString('en-us')%>đ</span>
+                                            <%if(product.productDetails[0].sale <= 100) {%>
+                                                <span class="sale-prices">-<%=product.productDetails[0].sale%>%</span>
+                                            <%} else { %>
+                                                <span class="sale-prices">-<%=product.productDetails[0].sale%>đ</span>
+                                            <%}%>
+                                        </p>
+                                    <%} else {%>
+                                        <p>
+                                            <span class="price-olds"><%=parseInt(product.productDetails[0].price).toLocaleString('en-us')%>đ</span>
+                                        </p>
+                                    <%}%>
+                                    <p><span>Đã bán: <%=product.totalQuantity%></span></p>
                                 </div>
                             </div>
                         <%}%>

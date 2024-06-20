@@ -1,17 +1,15 @@
 const orderModel = require("../../models/order");
-const productModel = require("../../models/product");
-const { format } = require("date-fns");
 
 // thống kế doanh thu 10 ngày gần nhất
-const getRevenueByLast10Days = async (startDate, endDate) => {
+const getRevenueByLast10Days = async () => {
   try {
-    const today = new Date();
-    const revenueByLast10Days = [];
+    const today = new Date(); // chứa ngày hiện tại
+    const revenueByLast10Days = []; // lưu doanh thu 10 ngày gần nhất
 
     // Lặp qua 10 ngày gần nhất
     for (let i = 0; i < 10; i++) {
       const currentDate = new Date(today);
-      currentDate.setDate(currentDate.getDate() - i); // Đặt ngày là ngày i trước đó
+      currentDate.setDate(currentDate.getDate() - i); // i là ngày trước đó
 
       // Lấy ngày bắt đầu và kết thúc của ngày hiện tại
       const startOfDay = new Date(
@@ -34,6 +32,7 @@ const getRevenueByLast10Days = async (startDate, endDate) => {
       // Truy vấn doanh thu cho ngày hiện tại
       const revenueOfDay = await orderModel.aggregate([
         {
+          // chọn những đơn hàng nằm trong khoảng từ startOfDay đến endOfDay và có trạng thái là "Đã giao hàng"
           $match: {
             createdAt: {
               $gte: startOfDay,
@@ -43,6 +42,7 @@ const getRevenueByLast10Days = async (startDate, endDate) => {
           },
         },
         {
+          // Nhóm các đơn hàng lại và tính tổng doanh thu 
           $group: {
             _id: null,
             totalRevenue: {
@@ -50,16 +50,14 @@ const getRevenueByLast10Days = async (startDate, endDate) => {
             },
           },
         },
-        {
-          $project: {
-            _id: 0,
-            totalRevenue: 1,
-          },
-        },
       ]);
 
       // Thêm kết quả vào mảng
-      const formattedDate = currentDate.toISOString().split("T")[0]; // Lấy ngày dưới dạng "YYYY-MM-DD"
+      const formattedDate = currentDate.toLocaleDateString('en-GB', {
+        year: "numeric", // Hiển thị năm đầy đủ
+        month: "2-digit", // Hiển thị tháng dưới dạng số hai chữ số
+        day: "2-digit", // Hiển thị ngày dưới dạng số hai chữ số
+      }); // Lấy ngày dưới dạng "dd-mm-yyyy"
       revenueByLast10Days.push({
         date: formattedDate,
         totalRevenue:
@@ -111,17 +109,14 @@ const getRevenueByWeekday = async () => {
             },
           },
         },
-        {
-          $project: {
-            _id: 0,
-            totalRevenue: 1,
-          },
-        },
       ]);
 
       // Thêm kết quả vào mảng
-      const dayOfWeek = currentDay.toLocaleDateString(undefined, {
+      const dayOfWeek = currentDay.toLocaleDateString('en-GB', {
         weekday: "long",
+        // year: "numeric", // Hiển thị năm đầy đủ
+        // month: "2-digit", // Hiển thị tháng dưới dạng số hai chữ số
+        // day: "2-digit", // Hiển thị ngày dưới dạng số hai chữ số
       });
       revenueByWeekday.push({
         dayOfWeek,
@@ -175,16 +170,13 @@ const getRevenueByMonth = async () => {
             },
           },
         },
-        {
-          $project: {
-            _id: 0,
-            totalRevenue: 1,
-          },
-        },
       ]);
 
       // Thêm kết quả vào mảng
-      const monthYear = `${startOfMonth.getMonth() + 1} - ${startOfMonth.getFullYear()}`;
+      const monthYear = startOfMonth.toLocaleDateString('en-GB', {
+        year: "numeric", // Hiển thị năm đầy đủ
+        month: "2-digit", // Hiển thị tháng dưới dạng số hai chữ số
+      });
       revenueBy12Months.push({
         monthYear,
         totalRevenue:
@@ -249,16 +241,14 @@ const getRevenueByCustomDates = async (startDate, endDate) => {
               },
             },
           },
-          {
-            $project: {
-              _id: 0,
-              totalRevenue: 1,
-            },
-          },
         ]);
 
         // Định dạng ngày
-        const formattedDate = format(date, "dd/MM/yyyy");
+        const formattedDate = date.toLocaleDateString('en-GB', {
+          year: "numeric", // Hiển thị năm đầy đủ
+          month: "2-digit", // Hiển thị tháng dưới dạng số hai chữ số
+          day: "2-digit", // Hiển thị ngày dưới dạng số hai chữ số
+        });;
         // Trả về kết quả doanh thu cho ngày hiện tại
         return {
           date: formattedDate,
@@ -289,8 +279,6 @@ const handleTime = async (req, res) => {
     labels: resulttotalDate,
     datasetLabel: "Number of Votes",
     data: resulttotalRevenue,
-    backgroundColor: "rgba(255, 99, 132, 0.2)",
-    borderColor: "rgba(255, 99, 132, 1)",
   };
   res.json(dataDateChoose);
 };
@@ -305,8 +293,6 @@ const index = async (req, res) => {
     labels: labelsDay,
     datasetLabel: "Number of Votes",
     data: dataDay,
-    backgroundColor: "rgba(255, 99, 132, 0.2)",
-    borderColor: "rgba(255, 99, 132, 1)",
   };
 
   // data follow week
@@ -318,8 +304,6 @@ const index = async (req, res) => {
     labels: labelsWeek,
     datasetLabel: "Number of Votes",
     data: dataWeek,
-    backgroundColor: "rgba(255, 99, 132, 0.2)",
-    borderColor: "rgba(255, 99, 132, 1)",
   };
 
   // data follow month
@@ -331,8 +315,6 @@ const index = async (req, res) => {
     labels: labelYear,
     datasetLabel: "Number of Votes",
     data: dataMonth,
-    backgroundColor: "rgba(255, 99, 132, 0.2)",
-    borderColor: "rgba(255, 99, 132, 1)",
   };
 
   res.render("admin/statistical/statistical", {

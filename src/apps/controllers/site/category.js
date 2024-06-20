@@ -5,8 +5,10 @@ const pagination = require("../../../common/pagination")
 
 const category = async (req, res) => {
     const id = req.params.id;
+
+    // phân trang
     const page = parseInt(req.query.page) || 1;
-    const limit = 12;
+    const limit = 12; // hien thi so luong san pham tren 1 trang
     const skip = page*limit - limit;
     const total = await productModel.find({
         cat_id: id
@@ -16,7 +18,10 @@ const category = async (req, res) => {
     const prev = page - 1;
     const hasNext = page < totalPages ? true : false;
     const hasPrev = page > 1 ? true : false;
+
     const category = await categoryModel.findById(id)
+
+    //kiem tra xem danh muc cua san pham co trung id voi danh muc cu the
     const products = await productModel.find({
         cat_id: id
     }).sort({_id: -1}).skip(skip).limit(limit)
@@ -33,7 +38,7 @@ const category = async (req, res) => {
         {
           $group: {
             _id: {
-              productName: "$items.name", // Nhóm theo tên sản phẩm1
+              productName: "$items.name", // Nhóm theo tên sản phẩm
             },
             totalQuantity: { $sum: "$items.qty" }, // Tính tổng số lượng đã bán
             productName: { $first: "$items.name" }, // Giữ lại tên sản phẩm

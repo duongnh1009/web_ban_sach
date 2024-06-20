@@ -81,7 +81,7 @@
     <!-- bar char -->
     <!-- chart import product -->
     <script>
-        var ctxPieRestock = document.getElementById('pieChartRestock').getContext('2d');
+        var ctxPieRestock = document.getElementById('pieChartRestock');
         let dataPieRestock = '<%= dataRestock.data.labels %>';
         let dataArrayPieRestock = dataPieRestock.split(",")
         var myChartPie = new Chart(ctxPieRestock, {
@@ -91,8 +91,7 @@
                 datasets: [{
                     label: 'Tổng số lượng đã nhập',
                     data: <%= JSON.stringify(dataRestock.data.datasets[0].data) %>,
-                    backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)', 'rgb(0,0,255)'],
-                    hoverOffset: 4
+                    backgroundColor: ['red', 'blue', 'green', 'yellow', 'tomato', 'pink', 'black'],
                 }]
             }
         });

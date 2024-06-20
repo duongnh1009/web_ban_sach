@@ -5,7 +5,7 @@ const productModel = require("../../models/product");
 const getTotalPurchaseByDayAndProduct = async() => {
   try {
     const result = await productModel.aggregate([
-      // Đầu tiên, unwind purchaseHistory để làm phẳng mảng
+      // tách $purchaseHistory thành những documents riêng biệt
       { $unwind: "$purchaseHistory" },
       // Nhóm theo ngày và slug của sản phẩm, tính tổng quantity
       {
@@ -17,16 +17,15 @@ const getTotalPurchaseByDayAndProduct = async() => {
                 date: { $toDate: "$purchaseHistory.date" },
               },
             },
-            product: "$name",
-            quantity: "$quantity",
+            product: "$name", // lấy tên sản phẩm
+            quantity: "$quantity", // lấy số lượng tồn kho
           },
-          totalQuantity: { $sum: "$purchaseHistory.quantity" },
+          totalQuantity: { $sum: "$purchaseHistory.quantity" }, // lấy số lượng nhập
         },
       },
       // Đưa kết quả vào một object mới
       {
         $project: {
-          _id: 0,
           day: "$_id.day",
           product: "$_id.product",
           quantity: "$_id.quantity",
@@ -52,7 +51,7 @@ const getSoldItemsByProductNameAndTime = async() => {
         },
       },
       {
-        $unwind: "$items",  // Tách mỗi mục hàng thành một document riêng biệt
+        $unwind: "$items",  // Tách items thành những document riêng biệt
       },
       {
         $group: {
@@ -63,13 +62,19 @@ const getSoldItemsByProductNameAndTime = async() => {
             day: { $dayOfMonth: "$createdAt" }, // Nhóm theo ngày
           },
           totalQuantity: { $sum: "$items.qty" }, // Tính tổng số lượng đã bán
-          quantity: { $last: "$items.quantity" }, // Tính tổng số lượng tồn kho
           productName: { $first: "$items.name" }, // Giữ lại tên sản phẩm
         },
       },
       {
+        $lookup: {
+          from: "products", // Tên collection chứa thông tin sản phẩm
+          localField: "_id.productName", // Trường trong collection hiện tại để so khớp
+          foreignField: "name", // Trường trong collection "products" chứa thông tin sản phẩm để so khớp
+          as: "productDetails", // Tên của trường chứa kết quả tìm kiếm
+        },
+      },
+      {
         $project: {
-          _id: 0,
           productName: 1,
           date: {
             $dateToString: {
@@ -84,7 +89,7 @@ const getSoldItemsByProductNameAndTime = async() => {
             },
           },
           totalQuantity: 1,
-          quantity: 1,
+          "productDetails.quantity": 1, // Bao gồm trường quantity từ kết quả của $lookup
         },
       }
     ]);
@@ -103,23 +108,15 @@ const getSoldItemsByProductNameAndTime = async() => {
 const getProductSales = async () => {
   try {
     const productSales = await orderModel.aggregate([
-      // Match orders with status "Đã giao"
+      // lấy các đơn hàng có trạng thái là "Đã giao hàng"
       { $match: { status: "Đã giao hàng" } },
-      // Unwind the items array to treat each item as a separate document
+      // tách $items thành những document riêng biệt
       { $unwind: "$items" },
-      // Group by product name and sum up the total quantity sold
       {
         $group: {
-          _id: "$items.name",
+          _id: "$items.name", // nhóm các sản phẩm theo tên
+          name: { $first: "$items.name" }, // Lấy tên sản phẩm (chỉ cần một lần)
           totalQuantitySold: { $sum: "$items.qty" },
-        },
-      },
-      // Project to reshape the output
-      {
-        $project: {
-          productName: "$_id",
-          totalQuantitySold: 1,
-          _id: 0,
         },
       },
     ]);
@@ -136,7 +133,7 @@ const getTotalPurchaseHistoryByProduct = async () => {
   try {
     const result = await productModel.aggregate([
       {
-        $unwind: "$purchaseHistory", // "Giải phóng" mỗi mục trong mảng purchaseHistory
+        $unwind: "$purchaseHistory", // tách $purchaseHistory thành những documents riêng biệt
       },
       {
         $group: {
@@ -158,19 +155,6 @@ const getTotalPurchaseHistoryByProduct = async () => {
 };
 
 const importProduct = async (req, res) => {
-  // Pie chart
-  const generateColors = (numColors) => {
-    const colors = [];
-    for (let i = 0; i < numColors; i++) {
-      // Tạo màu ngẫu nhiên
-      const color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-        Math.random() * 256
-      )}, ${Math.floor(Math.random() * 256)})`;
-      colors.push(color);
-    }
-    return colors;
-  };
-
   // data pieChart import product
   const dataImportProduct = await getTotalPurchaseHistoryByProduct();
   const nameProductRestock = dataImportProduct.map((item) => item.name);
@@ -181,10 +165,9 @@ const importProduct = async (req, res) => {
       labels: nameProductRestock,
       datasets: [
         {
-          label: "My First Dataset",
+          label: "Tổng số lượng đã nhập",
           data: quantityRestock,
-          backgroundColor: generateColors(nameProductRestock.length),
-          hoverOffset: 4,
+          backgroundColor: nameProductRestock.length,
         },
       ],
     },
@@ -202,22 +185,9 @@ const importProduct = async (req, res) => {
 };
 
 const soldOut = async(req, res) => {
-   // Pie chart
-   const generateColors = (numColors) => {
-    const colors = [];
-    for (let i = 0; i < numColors; i++) {
-      // Tạo màu ngẫu nhiên
-      const color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(
-        Math.random() * 256
-      )}, ${Math.floor(Math.random() * 256)})`;
-      colors.push(color);
-    }
-    return colors;
-  };
-
   // data pieChart sales
   const dataSalesByProduct = await getProductSales();
-  const nameProduct = dataSalesByProduct.map((item) => item.productName);
+  const nameProduct = dataSalesByProduct.map((item) => item.name);
   const quantitySale = dataSalesByProduct.map((item) => item.totalQuantitySold);
   const PieChart = {
     type: "pie",
@@ -225,10 +195,9 @@ const soldOut = async(req, res) => {
       labels: nameProduct,
       datasets: [
         {
-          label: "My First Dataset",
+          label: "Tổng số lượng đã bán",
           data: quantitySale,
-          backgroundColor: generateColors(nameProduct.length),
-          hoverOffset: 4,
+          backgroundColor: nameProduct.length,
         },
       ],
     },

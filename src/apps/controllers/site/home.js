@@ -3,6 +3,7 @@ const orderModel = require("../../models/order");
 const productModel = require("../../models/product")
 
 const home = async (req, res) => {
+    // hiển thị sản phẩm theo danh mục cụ thể
     const categories = await categoryModel.find();
     const productsByCategory = {};
     for (const category of categories) {
